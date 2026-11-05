@@ -1,0 +1,280 @@
+<title>Animated Workflow Examples</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: short title band, then three stacked example panels, each = SVG stage + control bar + status line */
+:root{
+  --bg:#f4f5f8; --surface:#ffffff; --fg:#161b29; --muted:#5a6276; --line:#d9dde7; --line-strong:#8a93a8;
+  --band:#141a2e; --band-fg:#eef1fb; --band-muted:#a9b2cc;
+  --agent:#2a46c9; --agent-soft:#e6eafb; --human:#b5590b; --human-soft:#fcefdf;
+  --worker:#3d4659; --worker-soft:#eceef3; --out:#0f7a63; --out-soft:#e0f2ec;
+  --bad:#b42318; --bad-soft:#fdecea; --stage:#fafbfd;
+  --sans:"Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10131b; --surface:#181d28; --fg:#e7eaf2; --muted:#9aa2b6; --line:#2b3241; --line-strong:#6d7790;
+  --band:#0b0e17; --band-fg:#eef1fb; --band-muted:#a9b2cc;
+  --agent:#93a6ff; --agent-soft:#222b4c; --human:#f2a65a; --human-soft:#3a2914;
+  --worker:#c3c9d6; --worker-soft:#262c39; --out:#5fd1b1; --out-soft:#163830;
+  --bad:#ff8a80; --bad-soft:#3d1b19; --stage:#141924; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10131b; --surface:#181d28; --fg:#e7eaf2; --muted:#9aa2b6; --line:#2b3241; --line-strong:#6d7790;
+  --band:#0b0e17; --band-fg:#eef1fb; --band-muted:#a9b2cc;
+  --agent:#93a6ff; --agent-soft:#222b4c; --human:#f2a65a; --human-soft:#3a2914;
+  --worker:#c3c9d6; --worker-soft:#262c39; --out:#5fd1b1; --out-soft:#163830;
+  --bad:#ff8a80; --bad-soft:#3d1b19; --stage:#141924; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15.5px;line-height:1.55}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:1040px;margin:0 auto}
+.hero{background:var(--band);color:var(--band-fg);padding-block:30px 26px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--band-muted)}
+.hero h1{font-size:clamp(26px,4.6vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:8px 0 8px;text-wrap:balance}
+.hero p{margin:0;color:var(--band-muted);max-width:64ch}
+main{padding-block:28px 56px;display:flex;flex-direction:column;gap:36px}
+h2{font-size:22px;font-weight:700;margin:0 0 4px;text-wrap:balance}
+.lead{margin:0 0 14px;color:var(--muted);max-width:68ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stage{background:var(--stage);overflow-x:auto;border-bottom:1px solid var(--line)}
+.stage svg{display:block;width:100%;min-width:720px;height:auto}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px}
+.btn{font:inherit;font-size:14px;font-weight:600;border-radius:6px;padding:7px 14px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.btn.primary{background:var(--agent);border-color:var(--agent);color:var(--surface)}
+.btn:hover{border-color:var(--agent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible,select:focus-visible{outline:2px solid var(--agent);outline-offset:2px}
+select{font:inherit;font-size:14px;padding:6px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.status{flex:1 1 260px;min-width:0;font-size:14px;color:var(--muted);font-family:var(--mono)}
+.status b{color:var(--fg);font-weight:600}
+.split{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.split .stage{border-bottom:none;border-right:1px solid var(--line)}
+.split .stage svg{min-width:520px}
+.log{padding:14px;font-family:var(--mono);font-size:12.5px;display:flex;flex-direction:column;gap:6px;min-width:0;max-height:320px;overflow:auto}
+.log .h{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.log div{padding:6px 8px;border-radius:5px;background:var(--worker-soft)}
+.log .bad{background:var(--bad-soft);color:var(--bad)}
+.log .good{background:var(--out-soft);color:var(--out)}
+.log .empty{background:none;color:var(--muted);padding:0}
+@media (max-width:760px){.split{grid-template-columns:1fr}.split .stage{border-right:none;border-bottom:1px solid var(--line)}}
+.why{padding:0 14px 14px;margin:0;font-size:14px;color:var(--muted)}
+.why b{color:var(--fg)}
+
+/* SVG */
+.edge{fill:none;stroke:var(--line);stroke-width:2}
+.edge.lit{stroke:var(--agent)}
+.elabel{fill:var(--muted);font:500 11.5px var(--sans)}
+.node rect,.node polygon{stroke-width:1.6;transition:stroke-width .2s, filter .2s}
+.k-worker rect,.k-worker polygon{fill:var(--worker-soft);stroke:var(--worker)}
+.k-agent rect{fill:var(--agent-soft);stroke:var(--agent)}
+.k-human rect{fill:var(--human-soft);stroke:var(--human)}
+.k-out rect{fill:var(--out-soft);stroke:var(--out)}
+.node{opacity:.55;transition:opacity .25s}
+.node.lit{opacity:1}
+.node.active rect,.node.active polygon{stroke-width:3.5}
+.node.fail rect{stroke:var(--bad);fill:var(--bad-soft)}
+.ntext{fill:var(--fg);font:600 13px var(--sans)}
+.nsub{fill:var(--muted);font:400 11px var(--sans)}
+.dot{fill:var(--agent);stroke:var(--surface);stroke-width:2.5;opacity:0}
+.dot.on{opacity:1}
+.ring{fill:none;stroke:var(--line);stroke-width:2;stroke-dasharray:4 5}
+.counter{fill:var(--muted);font:600 12px var(--mono);letter-spacing:.06em}
+@media (prefers-reduced-motion:no-preference){
+  .node.working rect{animation:pulse .8s ease-in-out infinite}
+  @keyframes pulse{50%{stroke-width:4}}
+}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+
+<div class="hero pad"><div class="inner">
+  <div class="eyebrow">Dsmart Cloud · Animation examples</div>
+  <h1>Animated Workflow Examples</h1>
+  <p>Three ways to show how an AI workflow runs. Press Play or Step on each one. All workflows and data are fictional examples.</p>
+</div></div>
+
+<main class="pad"><div class="inner" style="display:flex;flex-direction:column;gap:36px">
+
+<!-- Example 1 -->
+<section>
+  <h2>1. A lead moves through the workflow</h2>
+  <p class="lead">A dot follows one lead from form to CRM. Pick a high or low score to see the two paths.</p>
+  <div class="panel">
+    <div class="stage"><svg id="s1" viewBox="0 0 960 240" role="img" aria-label="Animated lead flow: form, clean, AI score, check, then Slack approval and CRM, or nurture list">
+      <path class="edge" id="e1" d="M150 120 H190"/>
+      <path class="edge" id="e2" d="M310 120 H350"/>
+      <path class="edge" id="e3" d="M470 120 H526"/>
+      <path class="edge" id="e4" d="M560 86 V60 H660"/>
+      <path class="edge" id="e5" d="M560 154 V185 H660"/>
+      <path class="edge" id="e6" d="M780 60 H830"/>
+      <text class="elabel" x="572" y="52">70 or more</text>
+      <text class="elabel" x="572" y="205">below 70</text>
+      <g class="node k-worker" id="nA"><rect x="30" y="97" width="120" height="46" rx="8"/><text class="ntext" x="90" y="117" text-anchor="middle">Form sent</text><text class="nsub" x="90" y="133" text-anchor="middle">Systeme.io</text></g>
+      <g class="node k-worker" id="nB"><rect x="190" y="97" width="120" height="46" rx="8"/><text class="ntext" x="250" y="117" text-anchor="middle">Clean data</text><text class="nsub" x="250" y="133" text-anchor="middle">worker</text></g>
+      <g class="node k-agent" id="nC"><rect x="350" y="97" width="120" height="46" rx="8"/><text class="ntext" x="410" y="117" text-anchor="middle">Score lead</text><text class="nsub" x="410" y="133" text-anchor="middle">AI agent</text></g>
+      <g class="node k-worker" id="nD"><polygon points="560,86 594,120 560,154 526,120"/><text class="ntext" x="560" y="124" text-anchor="middle">Check</text></g>
+      <g class="node k-human" id="nE"><rect x="660" y="37" width="120" height="46" rx="8"/><text class="ntext" x="720" y="57" text-anchor="middle">You approve</text><text class="nsub" x="720" y="73" text-anchor="middle">Slack</text></g>
+      <g class="node k-out" id="nF"><rect x="830" y="37" width="110" height="46" rx="8"/><text class="ntext" x="885" y="57" text-anchor="middle">CRM</text><text class="nsub" x="885" y="73" text-anchor="middle">new contact</text></g>
+      <g class="node k-out" id="nG"><rect x="660" y="162" width="120" height="46" rx="8"/><text class="ntext" x="720" y="182" text-anchor="middle">Nurture list</text><text class="nsub" x="720" y="198" text-anchor="middle">email later</text></g>
+      <circle class="dot" id="d1" r="8" cx="90" cy="120"/>
+    </svg></div>
+    <div class="bar">
+      <button class="btn primary" id="p1">Play</button>
+      <button class="btn" id="st1">Step</button>
+      <button class="btn" id="r1">Reset</button>
+      <label for="sc1" class="nsub" style="font-size:13px;color:var(--muted)">Lead</label>
+      <select id="sc1"><option value="hi">Example Bakery Co. (scores 92)</option><option value="lo">Demo Student (scores 24)</option></select>
+      <span class="status" id="t1" aria-live="polite">Press Play or Step.</span>
+    </div>
+    <p class="why"><b>Use it for:</b> product pages and demos, so a buyer sees each step and the approval point before paying.</p>
+  </div>
+</section>
+
+<!-- Example 2 -->
+<section>
+  <h2>2. How an AI agent loops until the job is done</h2>
+  <p class="lead">An agent reads the task, picks a step, uses a tool, and checks the result. If the check fails, it tries again. The log shows each pass.</p>
+  <div class="panel split">
+    <div class="stage"><svg id="s2" viewBox="0 0 600 300" role="img" aria-label="Animated agent loop: read task, decide, use a tool, check result, repeat or finish">
+      <circle class="ring" cx="330" cy="150" r="105"/>
+      <path class="edge" id="a1" d="M330 45 A105 105 0 0 1 435 150"/>
+      <path class="edge" id="a2" d="M435 150 A105 105 0 0 1 330 255"/>
+      <path class="edge" id="a3" d="M330 255 A105 105 0 0 1 225 150"/>
+      <path class="edge" id="a4" d="M225 150 A105 105 0 0 1 330 45"/>
+      <path class="edge" id="a5" d="M175 150 H125"/>
+      <g class="node k-worker" id="mR"><rect x="275" y="25" width="110" height="40" rx="8"/><text class="ntext" x="330" y="50" text-anchor="middle">Read task</text></g>
+      <g class="node k-agent" id="mD"><rect x="385" y="130" width="110" height="40" rx="8"/><text class="ntext" x="440" y="155" text-anchor="middle">Decide step</text></g>
+      <g class="node k-agent" id="mT"><rect x="275" y="235" width="110" height="40" rx="8"/><text class="ntext" x="330" y="260" text-anchor="middle">Use a tool</text></g>
+      <g class="node k-worker" id="mC"><rect x="175" y="130" width="100" height="40" rx="8"/><text class="ntext" x="225" y="155" text-anchor="middle">Check</text></g>
+      <g class="node k-out" id="mX"><rect x="15" y="130" width="110" height="40" rx="8"/><text class="ntext" x="70" y="155" text-anchor="middle">Done</text></g>
+      <text class="counter" id="it" x="330" y="155" text-anchor="middle">PASS 0</text>
+      <circle class="dot" id="d2" r="8" cx="330" cy="45"/>
+    </svg></div>
+    <div class="log" id="log" aria-live="polite"><span class="h">Agent log</span><div class="empty">Press Play to run the agent.</div></div>
+  </div>
+  <div class="bar" style="padding-inline:0">
+    <button class="btn primary" id="p2">Play</button>
+    <button class="btn" id="r2">Reset</button>
+    <span class="status">Task: <b>find 3 local bakeries and write their websites to a sheet</b></span>
+  </div>
+  <p class="why" style="padding:0"><b>Use it for:</b> training and recipes, to explain why agents retry and where a check stops bad output.</p>
+</section>
+
+<!-- Example 3 -->
+<section>
+  <h2>3. One coordinator, several agents working at once</h2>
+  <p class="lead">A coordinator splits the job and sends parts to three helpers at the same time. Each finishes at its own pace. The report is built when all three are done.</p>
+  <div class="panel">
+    <div class="stage"><svg id="s3" viewBox="0 0 960 260" role="img" aria-label="Animated fan-out: coordinator sends work to three helpers in parallel, results merge into a report">
+      <path class="edge" id="o1" d="M180 130 C300 130 300 50 420 50"/>
+      <path class="edge" id="o2" d="M180 130 H420"/>
+      <path class="edge" id="o3" d="M180 130 C300 130 300 210 420 210"/>
+      <path class="edge" id="b1" d="M560 50 C680 50 680 130 790 130"/>
+      <path class="edge" id="b2" d="M560 130 H790"/>
+      <path class="edge" id="b3" d="M560 210 C680 210 680 130 790 130"/>
+      <g class="node k-agent" id="q0"><rect x="40" y="105" width="140" height="50" rx="8"/><text class="ntext" x="110" y="127" text-anchor="middle">Coordinator</text><text class="nsub" x="110" y="143" text-anchor="middle">splits the job</text></g>
+      <g class="node k-agent" id="q1"><rect x="420" y="27" width="140" height="46" rx="8"/><text class="ntext" x="490" y="47" text-anchor="middle">Research agent</text><text class="nsub" x="490" y="63" text-anchor="middle">finds sources</text></g>
+      <g class="node k-agent" id="q2"><rect x="420" y="107" width="140" height="46" rx="8"/><text class="ntext" x="490" y="127" text-anchor="middle">Writer agent</text><text class="nsub" x="490" y="143" text-anchor="middle">drafts the text</text></g>
+      <g class="node k-worker" id="q3"><rect x="420" y="187" width="140" height="46" rx="8"/><text class="ntext" x="490" y="207" text-anchor="middle">Pricing worker</text><text class="nsub" x="490" y="223" text-anchor="middle">pulls numbers</text></g>
+      <g class="node k-out" id="q4"><rect x="790" y="105" width="140" height="50" rx="8"/><text class="ntext" x="860" y="127" text-anchor="middle">Report</text><text class="nsub" x="860" y="143" text-anchor="middle">ready for you</text></g>
+      <circle class="dot" id="f1" r="7" cx="180" cy="130"/>
+      <circle class="dot" id="f2" r="7" cx="180" cy="130"/>
+      <circle class="dot" id="f3" r="7" cx="180" cy="130"/>
+    </svg></div>
+    <div class="bar">
+      <button class="btn primary" id="p3">Play</button>
+      <button class="btn" id="r3">Reset</button>
+      <span class="status" id="t3" aria-live="polite">Press Play.</span>
+    </div>
+    <p class="why"><b>Use it for:</b> showing clients how an AI team of agents and workers splits one job, the core idea of an agentic factory.</p>
+  </div>
+</section>
+
+<footer>Dsmart Cloud · Example page. All workflows, names, and results are fictional.</footer>
+</div></main>
+
+<script>
+const $=id=>document.getElementById(id);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,150):ms));
+function along(path,dot,ms){
+  return new Promise(res=>{
+    const L=path.getTotalLength();
+    if(reduce){const p=path.getPointAtLength(L);dot.setAttribute("cx",p.x);dot.setAttribute("cy",p.y);return res();}
+    const t0=performance.now();
+    (function f(t){let k=Math.min(1,(t-t0)/ms);const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      const p=path.getPointAtLength(L*e);dot.setAttribute("cx",p.x);dot.setAttribute("cy",p.y);
+      k<1?requestAnimationFrame(f):res();})(t0);
+  });
+}
+function clear(svg){svg.querySelectorAll(".lit,.active,.fail,.working").forEach(n=>n.classList.remove("lit","active","fail","working"));}
+function activate(n){n.parentNode.querySelectorAll(".node.active").forEach(x=>x.classList.remove("active"));n.classList.add("lit","active");}
+
+/* ---------- Example 1 ---------- */
+const S1={hi:[["nA",null,"1 · Form sent: Example Bakery Co. asks for order automation"],["nB","e1","2 · Worker cleans the email and checks for duplicates"],["nC","e2","3 · AI agent scores the lead: 92 / 100"],["nD","e3","4 · Check: 92 is 70 or more → send to you"],["nE","e4","5 · You approve in Slack"],["nF","e6","6 · Contact created in CRM with a follow-up task"]],
+          lo:[["nA",null,"1 · Form sent: Demo Student asks for homework help"],["nB","e1","2 · Worker cleans the email and checks for duplicates"],["nC","e2","3 · AI agent scores the lead: 24 / 100"],["nD","e3","4 · Check: 24 is below 70 → skip your review"],["nG","e5","5 · Added to nurture list. No action needed from you"]]};
+let i1=0,busy1=false;
+const d1=$("d1");
+function setBtns1(b){busy1=b;$("p1").disabled=b;$("st1").disabled=b;$("sc1").disabled=b;}
+async function step1(){
+  const seq=S1[$("sc1").value]; if(i1>=seq.length) return false;
+  const [node,edge,msg]=seq[i1];
+  d1.classList.add("on");
+  if(edge){$(edge).classList.add("lit");await along($(edge),d1,700);}
+  else{d1.setAttribute("cx",90);d1.setAttribute("cy",120);}
+  activate($(node)); $("t1").innerHTML="<b>"+msg+"</b>"; i1++;
+  if(i1>=seq.length) $("t1").innerHTML+=" · Done";
+  return true;
+}
+function reset1(){i1=0;clear($("s1"));d1.classList.remove("on");$("t1").textContent="Press Play or Step.";}
+$("p1").onclick=async()=>{if(i1>=S1[$("sc1").value].length)reset1();setBtns1(true);while(await step1()) await sleep(650);setBtns1(false);};
+$("st1").onclick=async()=>{if(i1>=S1[$("sc1").value].length)reset1();setBtns1(true);await step1();setBtns1(false);};
+$("r1").onclick=reset1; $("sc1").onchange=reset1;
+
+/* ---------- Example 2 ---------- */
+const d2=$("d2"),logEl=$("log");
+function log(t,c){logEl.querySelector(".empty")?.remove();const d=document.createElement("div");if(c)d.className=c;d.textContent=t;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+const passes=[
+  {decide:"Decide: search the web for bakeries",tool:"Tool: web search → timed out",ok:false,check:"Check: no results → try again"},
+  {decide:"Decide: search again, smaller query",tool:"Tool: web search → 5 results",ok:false,check:"Check: 2 have no website → find 1 more"},
+  {decide:"Decide: search for one more bakery",tool:"Tool: web search → 1 result, sheet updated",ok:true,check:"Check: 3 bakeries with websites → pass"}];
+let busy2=false;
+function reset2(){clear($("s2"));d2.classList.remove("on");d2.setAttribute("cx",330);d2.setAttribute("cy",45);$("it").textContent="PASS 0";
+  logEl.innerHTML='<span class="h">Agent log</span><div class="empty">Press Play to run the agent.</div>';}
+$("r2").onclick=()=>{if(!busy2)reset2();};
+$("p2").onclick=async()=>{
+  reset2();busy2=true;$("p2").disabled=true;$("r2").disabled=true;
+  d2.classList.add("on");activate($("mR"));log("Read: find 3 local bakeries, write websites to a sheet");await sleep(700);
+  for(let p=0;p<passes.length;p++){
+    const P=passes[p];$("it").textContent="PASS "+(p+1);
+    if(p>0){$("a4").classList.add("lit");await along($("a4"),d2,800);activate($("mR"));await sleep(250);}
+    $("a1").classList.add("lit");await along($("a1"),d2,800);activate($("mD"));log(P.decide);await sleep(500);
+    $("a2").classList.add("lit");await along($("a2"),d2,800);activate($("mT"));$("mT").classList.add("working");await sleep(900);$("mT").classList.remove("working");log(P.tool,P.ok?null:(p===0?"bad":null));
+    $("a3").classList.add("lit");await along($("a3"),d2,800);activate($("mC"));
+    if(!P.ok){$("mC").classList.add("fail");log(P.check,"bad");await sleep(800);$("mC").classList.remove("fail");}
+    else{log(P.check,"good");await sleep(500);}
+  }
+  $("a5").classList.add("lit");await along($("a5"),d2,500);activate($("mX"));log("Done after 3 passes. Sheet is ready for your review.","good");
+  busy2=false;$("p2").disabled=false;$("r2").disabled=false;
+};
+
+/* ---------- Example 3 ---------- */
+let busy3=false;
+function reset3(){clear($("s3"));["f1","f2","f3"].forEach(id=>{const d=$(id);d.classList.remove("on");d.setAttribute("cx",180);d.setAttribute("cy",130);});$("t3").textContent="Press Play.";}
+$("r3").onclick=()=>{if(!busy3)reset3();};
+$("p3").onclick=async()=>{
+  reset3();busy3=true;$("p3").disabled=true;$("r3").disabled=true;
+  activate($("q0"));$("t3").innerHTML="<b>Coordinator splits the job into 3 parts</b>";await sleep(700);
+  let done=0;const times=[1800,900,1300];
+  const run=async k=>{
+    const d=$("f"+k),n=$("q"+k);d.classList.add("on");$("o"+k).classList.add("lit");
+    await along($("o"+k),d,900);n.classList.add("lit","working");await sleep(times[k-1]);n.classList.remove("working");
+    $("b"+k).classList.add("lit");await along($("b"+k),d,900);d.classList.remove("on");
+    done++;$("t3").innerHTML="<b>"+done+" of 3 parts done</b>";
+  };
+  $("t3").innerHTML="<b>3 helpers working at the same time</b>";
+  await Promise.all([run(1),run(2),run(3)]);
+  $("q0").classList.remove("active");activate($("q4"));$("t3").innerHTML="<b>All 3 done · report ready for you to approve</b>";
+  busy3=false;$("p3").disabled=false;$("r3").disabled=false;
+};
+</script>
