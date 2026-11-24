@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DSC Project Onboarding Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm, technical, same family as the DSC Agent Factory diagram JC approved.
+   IDEA: a control-room schematic of how DSC work moves from idea to daily task.
+   PICTURE: one large animated SVG; dots travel the paths in order.
+   COLOUR and TYPE: deep navy ground, cyan capture, amber alignment, blue hub, violet setup, green execution; Space Grotesk + Inter.
+   LAYOUT: title band, full-width diagram, legend, then a definitions list. */
+:root{color-scheme:dark;--bg:#070b14;--panel:#0c1322;--ink:#e6ecf5;--mute:#93a1b8;--line:#1f2a3d;
+ --cyan:#22d3ee;--amber:#f5a524;--blue:#60a5fa;--violet:#a78bfa;--green:#34d399}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px);max-width:1240px;margin:0 auto}
+.kicker{font:500 12px/1 'JetBrains Mono',monospace;color:var(--cyan);letter-spacing:.12em}
+h1{font:700 clamp(32px,5vw,52px)/1.05 'Space Grotesk',sans-serif;margin:10px 0 12px;text-wrap:balance}
+h1 .a{color:var(--cyan)} h1 .b{color:var(--violet)}
+.lead{color:var(--mute);max-width:62ch;margin:0}
+.fig{margin:28px 0 0;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:12px;
+ background-image:radial-gradient(#1a2438 1px,transparent 1px);background-size:22px 22px}
+.fig svg{display:block;width:100%;height:auto}
+figcaption{color:var(--mute);font-size:14px;margin:10px 6px 2px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin:18px 0 0;padding:0;list-style:none;color:var(--mute);font-size:14px}
+.legend li::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:var(--c)}
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin-top:28px}
+.defs div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.defs b{font-family:'Space Grotesk',sans-serif}.defs p{margin:4px 0 0;color:var(--mute);font-size:15px}
+.note{color:var(--mute);font-size:13px;margin-top:22px}
+svg text{font-family:Inter,sans-serif}
+.t{font:700 15px 'Space Grotesk',sans-serif;fill:var(--ink)}
+.s{font-size:12px;fill:var(--mute)}
+.lane{font:500 11px 'JetBrains Mono',monospace;fill:#6f7f99;letter-spacing:.12em}
+.node{opacity:0;animation:in .6s ease forwards}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hub{animation:in .6s ease forwards,pulse 3s ease-in-out 2s infinite}
+@keyframes pulse{50%{filter:drop-shadow(0 0 18px rgba(96,165,250,.55))}}
+.wire{fill:none;stroke-width:1.6}
+@media (prefers-reduced-motion:reduce){.node,.hub{animation:none;opacity:1}.dot{display:none}}
+</style>
+</head>
+<body>
+<header class="band" style="padding-bottom:0">
+ <div class="kicker">DSMART CLOUD · DSC METHOD</div>
+ <h1>How a DSC <span class="a">idea</span> becomes <span class="b">committed work</span></h1>
+ <p class="lead">Reviewed candidates wait in the Backlog. A Pillar and a Goal give the work its purpose. After approval, each Project gets the same six parts.</p>
+</header>
+
+<main class="band" style="padding-top:0">
+<figure class="fig">
+<svg viewBox="0 96 1100 570" role="img" aria-label="DSC workflow: Backlog, Pillar selected, Goal (purpose), Approval, then Project. The Project has a Claude Project with the Onboard Skill, a GitHub repository, a Notion PARA project, a local sandbox, milestones and daily tasks.">
+ <defs>
+  <radialGradient id="gate" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f59e0b" stop-opacity=".28"/><stop offset="1" stop-color="#f59e0b" stop-opacity="0"/></radialGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#3b82f6" stop-opacity=".35"/><stop offset="1" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
+  <path id="p1" d="M240,170 L300,170"/>
+  <path id="p2" d="M500,170 L560,170"/>
+  <path id="p3" d="M760,170 L820,170"/>
+  <path id="p4" d="M920,202 C920,262 640,252 620,312"/>
+  <path id="p5" d="M700,352 C760,352 770,330 820,330"/>
+  <path id="p6" d="M940,360 L940,392"/>
+  <path id="s1" d="M520,422 C520,482 155,472 155,522"/>
+  <path id="s2" d="M545,422 C545,482 425,472 425,522"/>
+  <path id="s3" d="M575,422 C575,482 695,472 695,522"/>
+  <path id="s4" d="M600,422 C600,482 965,472 965,522"/>
+  <path id="s5" d="M155,586 L155,612"/>
+ </defs>
+
+ <text class="lane" x="40" y="118">BACKLOG TO PROJECT</text>
+ <text class="lane" x="820" y="290">EXECUTION</text>
+ <text class="lane" x="310" y="612">PROJECT SETUP · ONE OF EACH PER PROJECT</text>
+
+ <ellipse cx="570" cy="362" rx="230" ry="110" fill="url(#glow)"/>
+
+ <!-- wires -->
+ <g class="wire">
+  <use href="#p1" stroke="var(--cyan)" stroke-dasharray="5 5"/><use href="#p2" stroke="var(--amber)"/>
+  <use href="#p3" stroke="var(--amber)"/><use href="#p4" stroke="var(--blue)"/>
+  <use href="#p5" stroke="var(--green)"/><use href="#p6" stroke="var(--green)"/>
+  <use href="#s1" stroke="var(--violet)"/><use href="#s2" stroke="var(--violet)"/>
+  <use href="#s3" stroke="var(--violet)"/><use href="#s4" stroke="var(--violet)"/>
+  <use href="#s5" stroke="var(--violet)" stroke-dasharray="4 4"/>
+ </g>
+
+ <!-- stages -->
+ <g class="node" style="animation-delay:.1s"><title>Backlog: reviewed candidates for future work.</title>
+  <rect x="40" y="138" width="200" height="64" rx="12" fill="#0b1424" stroke="var(--cyan)"/>
+  <circle cx="64" cy="170" r="7" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+  <text class="t" x="82" y="165">Backlog</text><text class="s" x="82" y="185">reviewed candidates</text></g>
+ <g class="node" style="animation-delay:.5s"><title>Pillar selected: where the work belongs, one DSC Pillar P1 to P6.</title>
+  <rect x="300" y="138" width="200" height="64" rx="12" fill="#14110a" stroke="var(--amber)"/>
+  <circle cx="324" cy="170" r="7" fill="none" stroke="var(--amber)" stroke-width="2"/>
+  <text class="t" x="342" y="165">Pillar selected</text><text class="s" x="342" y="185">where it belongs · P1–P6</text></g>
+ <g class="node" style="animation-delay:.9s"><title>Goal (purpose): which Goal does this support? Required for a Project.</title>
+  <rect x="560" y="138" width="200" height="64" rx="12" fill="#14110a" stroke="var(--amber)"/>
+  <circle cx="584" cy="170" r="7" fill="none" stroke="var(--amber)" stroke-width="2"/>
+  <text class="t" x="602" y="165">Goal (purpose)</text><text class="s" x="602" y="185">the justification · required</text></g>
+ <g class="node" style="animation-delay:1.3s"><title>Approval: JC approves the move from Backlog to Project.</title>
+  <ellipse cx="930" cy="170" rx="140" ry="60" fill="url(#gate)"/>
+  <rect x="820" y="138" width="220" height="64" rx="12" fill="#1a1207" stroke="#f59e0b" stroke-width="2"/>
+  <path d="M844,160 l8,-4 l8,4 v6 c0,6 -4,9 -8,11 c-4,-2 -8,-5 -8,-11 z" fill="none" stroke="#f59e0b" stroke-width="1.6"/>
+  <text class="lane" x="870" y="160" fill="#f59e0b">GATE</text>
+  <text class="t" x="870" y="182">Approval</text><text class="s" x="948" y="182">JC approves</text></g>
+
+ <!-- rule card -->
+ <g class="node" style="animation-delay:1.5s">
+  <rect x="40" y="306" width="330" height="112" rx="12" fill="#0b1220" stroke="var(--line)"/>
+  <text class="lane" x="60" y="332">THE RULE</text>
+  <text class="s" x="60" y="358"><tspan fill="var(--cyan)" font-weight="600">Ideas</tspan>   “Interesting.”</text>
+  <text class="s" x="60" y="380"><tspan fill="var(--cyan)" font-weight="600">Backlog</tspan>   “Maybe we'll do it.”</text>
+  <text class="s" x="60" y="402"><tspan fill="var(--blue)" font-weight="600">Project</tspan>   “We are doing it.”</text>
+ </g>
+
+ <!-- hub -->
+ <g class="node hub" style="animation-delay:1.8s"><title>Committed work: P-xxx project. One active per category, four in total.</title>
+  <rect x="440" y="312" width="260" height="110" rx="16" fill="#0d1830" stroke="var(--blue)" stroke-width="2"/>
+  <text class="lane" x="464" y="340" fill="var(--blue)">COMMITTED WORK</text>
+  <text x="464" y="370" style="font:700 22px 'Space Grotesk',sans-serif;fill:var(--ink)">Project P-xxx</text>
+  <text class="s" x="464" y="396">1 active per category · 4 categories</text></g>
+
+ <!-- execution -->
+ <g class="node" style="animation-delay:2.2s"><title>At least 3 per project, each with one unique objective. Done when all its tasks are Done.</title>
+  <rect x="820" y="300" width="240" height="60" rx="12" fill="#0a1712" stroke="var(--green)"/>
+  <text class="t" x="840" y="326">Milestones</text><text class="s" x="840" y="345">P-xxx.MLnn · min 3 · unique</text></g>
+ <g class="node" style="animation-delay:2.5s"><title>Only in LAB - Daily Tasks, linked to a Project and a Milestone, with a Due Date.</title>
+  <rect x="820" y="392" width="240" height="60" rx="12" fill="#0a1712" stroke="var(--green)"/>
+  <text class="t" x="840" y="418">Daily Tasks</text><text class="s" x="840" y="437">P-xxx.n · Due Date</text></g>
+
+ <!-- setup -->
+ <g class="node" style="animation-delay:2.8s"><title>Claude Project: description, instructions and knowledge files.</title>
+  <rect x="40" y="522" width="230" height="64" rx="12" fill="#120f22" stroke="var(--violet)"/>
+  <text class="t" x="60" y="549">Claude Project</text><text class="s" x="60" y="569">instructions + knowledge</text></g>
+ <g class="node" style="animation-delay:3.0s"><title>GitHub repository p-xxx-name: README, CHANGELOG, docs.</title>
+  <rect x="310" y="522" width="230" height="64" rx="12" fill="#120f22" stroke="var(--violet)"/>
+  <text class="t" x="330" y="549">GitHub Repository</text><text class="s" x="330" y="569">README · CHANGELOG · docs</text></g>
+ <g class="node" style="animation-delay:3.2s"><title>PARA → Projects page: Project Overview, Goal, Pillar, Category.</title>
+  <rect x="580" y="522" width="230" height="64" rx="12" fill="#120f22" stroke="var(--violet)"/>
+  <text class="t" x="600" y="549">Notion PARA Project</text><text class="s" x="600" y="569">Overview · Goal · Pillar</text></g>
+ <g class="node" style="animation-delay:3.4s"><title>Local folder: C:\Users\jcrph\sandbox\p-xxx-name</title>
+  <rect x="850" y="522" width="210" height="64" rx="12" fill="#120f22" stroke="var(--violet)"/>
+  <text class="t" x="870" y="549">Local Sandbox</text><text class="s" x="870" y="569">sandbox\p-xxx-name</text></g>
+ <g class="node" style="animation-delay:3.6s"><title>Type "onboard this project" in the Claude Project chat.</title>
+  <rect x="60" y="612" width="190" height="36" rx="18" fill="#120f22" stroke="var(--violet)" stroke-dasharray="4 4"/>
+  <text class="s" x="155" y="635" text-anchor="middle" fill="var(--violet)">Onboard Skill</text></g>
+
+ <!-- moving dots -->
+ <g class="dot">
+  <circle r="4" fill="var(--cyan)"><animateMotion dur="1.2s" repeatCount="indefinite" begin="0s"><mpath href="#p1"/></animateMotion></circle>
+  <circle r="4" fill="var(--amber)"><animateMotion dur="1.2s" repeatCount="indefinite" begin=".4s"><mpath href="#p2"/></animateMotion></circle>
+  <circle r="4" fill="var(--amber)"><animateMotion dur="1.2s" repeatCount="indefinite" begin=".8s"><mpath href="#p3"/></animateMotion></circle>
+  <circle r="4.5" fill="var(--blue)"><animateMotion dur="2s" repeatCount="indefinite" begin="1.2s"><mpath href="#p4"/></animateMotion></circle>
+  <circle r="4" fill="var(--green)"><animateMotion dur="1.4s" repeatCount="indefinite" begin="2s"><mpath href="#p5"/></animateMotion></circle>
+  <circle r="4" fill="var(--green)"><animateMotion dur="1s" repeatCount="indefinite" begin="2.4s"><mpath href="#p6"/></animateMotion></circle>
+  <circle r="4" fill="var(--violet)"><animateMotion dur="2.2s" repeatCount="indefinite" begin="2.6s"><mpath href="#s1"/></animateMotion></circle>
+  <circle r="4" fill="var(--violet)"><animateMotion dur="2.2s" repeatCount="indefinite" begin="2.8s"><mpath href="#s2"/></animateMotion></circle>
+  <circle r="4" fill="var(--violet)"><animateMotion dur="2.2s" repeatCount="indefinite" begin="3s"><mpath href="#s3"/></animateMotion></circle>
+  <circle r="4" fill="var(--violet)"><animateMotion dur="2.2s" repeatCount="indefinite" begin="3.2s"><mpath href="#s4"/></animateMotion></circle>
+  <circle r="3.5" fill="var(--violet)"><animateMotion dur="1s" repeatCount="indefinite" begin="3.6s"><mpath href="#s5"/></animateMotion></circle>
+ </g>
+</svg>
+<figcaption>Hover a box for its rule. Backlog holds reviewed candidates; Pillar and Goal give the purpose; Approval commits the work; every Project gets the same six parts.</figcaption>
+</figure>
+
+<ul class="legend">
+ <li style="--c:var(--cyan)">Capture</li>
+ <li style="--c:var(--amber)">Alignment and approval</li>
+ <li style="--c:var(--blue)">Committed project</li>
+ <li style="--c:var(--violet)">Project setup</li>
+ <li style="--c:var(--green)">Execution</li>
+</ul>
+
+<section class="defs" aria-label="Definitions">
+ <div><b>Backlog</b><p>Reviewed candidates for future work.</p></div>
+ <div><b>Pillar selected</b><p>One DSC Pillar, P1–P6: where the work belongs.</p></div>
+ <div><b>Goal (purpose)</b><p>The justification. Required before a Project exists.</p></div>
+ <div><b>Approval</b><p>JC approves the move from Backlog to Project.</p></div>
+ <div><b>Project</b><p>Committed work. One active per category: Engineering, Operations, Revenue, Skills.</p></div>
+ <div><b>Six parts</b><p>Claude Project + Onboard Skill, GitHub repo, Notion PARA project, local sandbox, milestones, daily tasks.</p></div>
+</section>
+<p class="note">Source: Wiki page 03.1 · Components Analysis — Onboarding order, DSC workflow (JC, 2026-11-23). Task P-008.14.</p>
+</main>
+</body>
+</html>
